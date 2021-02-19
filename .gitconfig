@@ -1,6 +1,1 @@
-[https]
-    sslVerify = false
-    proxy = https://proxy.corpadderess:8080
-[http]
-    sslVerify = false
-    proxy = http://proxy.corpadderess:8080  
+http.proxy= --config http.sslVerify=false
