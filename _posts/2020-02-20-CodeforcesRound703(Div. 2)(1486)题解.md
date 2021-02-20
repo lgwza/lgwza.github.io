@@ -1,6 +1,6 @@
 ---
 layout:     post
-title:      Codeforces_Round_703_(Div. 2)(1486)题解
+title:      CodeforcesRound703(Div. 2)(1486)题解
 subtitle:   Codeforces 题解
 date:       2021-02-20
 author:     wza
