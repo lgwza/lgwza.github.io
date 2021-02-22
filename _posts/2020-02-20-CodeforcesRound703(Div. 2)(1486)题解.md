@@ -145,3 +145,66 @@ int main(){
 }
 ```
 
+## E. Paired Payment
+
+### 标签
+
+最短路，构造，虚点
+
+### 题意
+
+给定一个无向图，不保证连通，每条边有花费 $w$，每次走必须一次性走两条边 $a\rightarrow b\rightarrow c$，花费为 $(w_{ab}+w_{bc})^2$，求从 $1$ 号点走到其他每个点的最小花费，若不能到达则输出 $-1$。
+
+### 题解
+
+一看题目是跟最短路有关的，但是不能直接套用 dijkstra 模板。注意到边权 $w_i\leq 50$ 考虑添加虚点。对每个点 $v$，添加虚点 $v(w)=v*51+w$，其中 $w$ 是与之相连的边的权值。对于边 $(u,v,w)$，连边 $u\rightarrow v(w)$，权值取 $0$，再连边 $u(was)\rightarrow v$，权值取 $(was+w)^2$。这样一来，若 $u$ 是作为三个点 $q,u,v$ 的中间结点，则会走 $(q,u(was),0),(u(was),v,(was+w)^2)$ 这两条边。当 $v$ 作为中间结点时同理。按这种方式建图，然后从 $1$ 号点跑 dijkstra 即可得到答案。
+
+### 代码
+
+```cpp
+#include<bits/stdc++.h>
+using namespace std;
+int main(){
+	ios_base::sync_with_stdio(0);
+	cin.tie(NULL);
+	cout.tie(NULL);
+	int n,m;
+	cin>>n>>m;
+	vector<vector<pair<int,int>>> G(n*51);
+	auto addedge=[&](int u,int v,int w){
+		G[u*51].push_back({v*51+w,0});
+		for(int was=1;was<=50;was++){
+			G[u*51+was].push_back({v*51,(was+w)*(was+w)});
+		}
+	};
+	for(int i=0;i<m;i++){
+		int u,v,w;
+		cin>>u>>v>>w;
+		--u,--v;
+		addedge(u,v,w);
+		addedge(v,u,w);
+	}
+	set<pair<int,int>>st;
+	int inf=1e9+7;
+	vector<int> d(G.size(),inf);
+	d[0]=0;
+	st.insert({d[0],0});
+	while(st.size()){
+		auto f=*st.begin();
+		st.erase(st.begin());
+		for(auto i:G[f.second]){
+			if(d[i.first]>d[f.second]+i.second){
+				st.erase({d[i.first],i.first});
+				d[i.first]=d[f.second]+i.second;
+				st.insert({d[i.first],i.first});
+			}
+		}
+	}
+	for(int i=0;i<n;++i){
+		int ans=d[i*51];
+		if(ans==inf) cout<<"-1 ";
+		else cout<<ans<<' ';
+	}
+	return 0;
+}
+```
